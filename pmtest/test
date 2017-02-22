@@ -1,0 +1,6 @@
+#!/bin/sh
+nasm pmtest8.asm -o pmtest8.com
+mount -o loop pm.img /mnt/floppy
+cp pmtest8.com /mnt/floppy/
+umount /mnt/floppy
+bochs

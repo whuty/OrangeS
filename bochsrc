@@ -1,0 +1,39 @@
+#Configuration file in chapter 3
+###############################################################
+# Configuration file for Bochs
+###############################################################
+
+# how much memory the emulated machine will have
+ megs: 32
+
+#Magic_Break
+magic_break:enabled=1
+
+# filename of ROM images
+ romimage: file=/usr/local/share/bochs/BIOS-bochs-latest #/usr/share/bochs/BIOS-bochs-latest
+ vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest #/usr/share/vgabios/vgabios.bin
+
+#================================
+#the freedos.img is from the folder FreeDos-img
+#rename a.img to freedos.img
+#================================
+# what disk images will be used
+ floppya: 1_44=a.img,status=inserted
+#floppya: 1_44=freedos.img, status=inserted
+#floppyb: 1_44=pm.img,status=inserted
+
+# choose the boot disk.
+ boot: a
+
+# where do we send log messages?
+# log: bochsout.txt
+
+# disable the mouse
+ mouse: enabled=0
+
+#=================================================
+#NEW vision change keyboard_mapping: enabled=1, map=...
+#to：
+#==================================================
+# enable key mapping, using US layout as default.
+ keyboard: keymap=/usr/local/share/bochs/keymaps/x11-pc-us.map #/usr/share/bochs/keymaps/x11-pc-us.map
