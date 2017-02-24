@@ -179,8 +179,6 @@ LABEL_FILE_LOADED:
 	or	eax, 1
 	mov	cr0, eax
 
-	xchg bx,bx
-
 ; 真正进入保护模式
 	jmp	dword SelectorFlatC:(BaseOfLoaderPhyAddr+LABEL_PM_START)
 
@@ -362,6 +360,8 @@ LABEL_PM_START:
 	;mov	[gs:((80 * 0 + 39) * 2)], ax	; 屏幕第 0 行, 第 39 列。
 
 	call	InitKernel
+
+	xchg bx,bx
 
 	;jmp	$
 

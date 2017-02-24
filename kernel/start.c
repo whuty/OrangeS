@@ -5,11 +5,6 @@
 #include "string.h"
 #include "global.h"
 
-PUBLIC void* memcpy(void* pDst,void* pSrc,int iSize);
-
-PUBLIC u8 gdt_ptr[6];/* 0~15:Limit  16~47:Base */
-PUBLIC DESCRIPTOR gdt[GDT_SIZE];
-
 //cstart
 PUBLIC void cstart()
 {
@@ -26,4 +21,11 @@ PUBLIC void cstart()
 	
 	*p_gdt_limit = GDT_SIZE * sizeof(DESCRIPTOR) - 1;
 	*p_gdt_base  = (u32)&gdt;
+
+	u16* p_idt_limit = (u16*)(&idt_ptr);
+	u32* p_idt_base  = (u32*)(&idt_ptr[2]);
+	*p_idt_limit = IDT_SIZE * sizeof(GATE) - 1;
+	*p_idt_base  = (u32)&idt;
+	init_prot();
+	disp_str("-----\"cstart\" ends-----\n");
 }

@@ -17,14 +17,15 @@ CC = gcc
 LD = ld
 ASMBFLAGS = -I boot/include/
 ASMKFLAGS = -I include/ -f elf
-CFLAGS    = -I include/ -c -fno-builtin -m32
+CFLAGS    = -I include/ -c -fno-builtin -fno-stack-protector -m32
 LDFLAGS   = -s -Ttext $(ENTRYPOINT) -m elf_i386
 DASMFLAGS = -u -o $(ENTRYPOINT) -e $(ENTRYOFFSET)
 
 # This Program
 ORANGESBOOT = boot/boot.bin boot/loader.bin
 ORANGESKERNEL=kernel.bin
-OBJS		= kernel/kernel.o kernel/start.o lib/kliba.o lib/string.o kernel/global.o
+OBJS		= kernel/kernel.o kernel/start.o lib/kliba.o lib/string.o \
+  lib/klib.o kernel/global.o kernel/i8259.o kernel/protect.o
 DASMOUTPUT	= kernel.bin.asm
 
 # All Phony Targets
@@ -56,7 +57,8 @@ buildimg :
 	sudo cp -fv kernel.bin /mnt/floppy
 	sudo umount /mnt/floppy
 
-boot/boot.bin : boot/boot.asm boot/include/load.inc boot/include/fat12hdr.inc
+boot/boot.bin : boot/boot.asm boot/include/load.inc \
+ boot/include/fat12hdr.inc
 	$(ASM) $(ASMBFLAGS) -o $@ $<
 
 boot/loader.bin : boot/loader.asm boot/include/load.inc \
@@ -69,10 +71,21 @@ $(ORANGESKERNEL) : $(OBJS)
 kernel/kernel.o : kernel/kernel.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
 
-kernel/start.o : kernel/start.c include/type.h include/const.h include/protect.h
+kernel/start.o : kernel/start.c include/type.h include/const.h \
+  include/protect.h include/string.h include/proto.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/i8259.o : kernel/i8259.c include/type.h include/const.h \
+  include/protect.h include/proto.h
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/global.o : kernel/global.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/protect.o : kernel/protect.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/klib.o : lib/klib.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/kliba.o : lib/kliba.asm
