@@ -5,6 +5,8 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
+#ifndef _PROC_H_
+#define _PROC_H_
 
 typedef struct s_stackframe {
 	u32	gs;		/* \                                    */
@@ -46,3 +48,5 @@ typedef struct s_proc {
 
 #define STACK_SIZE_TOTAL	STACK_SIZE_TESTA
 
+
+#endif /*_PROC_H_*/
