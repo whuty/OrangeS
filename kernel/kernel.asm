@@ -1,15 +1,15 @@
-;$ nasm -f elf kernel.asm -o kernel.o
-;$ ld -s kernel.o -o kernel.bin  '-s' mean "strip all"
-
-SELECTOR_KERNEL_CS equ 8
+%include "sconst.inc"
 
 extern cstart
 extern	exception_handler
 extern	spurious_irq
+extern kernel_main
 
 extern gdt_ptr
 extern idt_ptr
 extern disp_pos
+extern p_proc_ready
+extern tss
 
 [section .bss]
 StackSpace resb 2*1024
@@ -114,7 +114,11 @@ _start:
 
 	jmp SELECTOR_KERNEL_CS:csinit ;jmp 8:csinit,let cs=8,in protect mode cs cannot be change directly
 csinit:
-	sti
+	xor eax,eax
+	mov ax,SELECTOR_TSS
+	ltr ax
+	;sti
+	jmp kernel_main
 	;push	0
 	;popfd	; Pop top of stack into EFLAGS
 	hlt
@@ -131,7 +135,8 @@ csinit:
 
 ALIGN   16
 hwint00:                ; Interrupt routine for irq 0 (the clock).
-        hwint_master    0
+        iretd
+        ;hwint_master    0
 
 ALIGN   16
 hwint01:                ; Interrupt routine for irq 1 (keyboard)
@@ -268,3 +273,22 @@ exception:
 	call	exception_handler
 	add	esp, 4*2	; 让栈顶指向 EIP，堆栈中从顶向下依次是：EIP、CS、EFLAGS
 	hlt
+
+; ====================================================================================
+;                                   restart
+; ====================================================================================
+restart:
+	mov	esp, [p_proc_ready]
+	lldt	[esp + P_LDT_SEL] 
+	lea	eax, [esp + P_STACKTOP]
+	mov	dword [tss + TSS3_S_SP0], eax
+
+	pop	gs
+	pop	fs
+	pop	es
+	pop	ds
+	popad
+
+	add	esp, 4
+
+	iretd
