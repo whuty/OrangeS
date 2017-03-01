@@ -9,6 +9,7 @@
 #include "const.h"
 #include "protect.h"
 #include "global.h"
+#include "proc.h"
 #include "proto.h"
 
 /* 本文件内函数声明 */
