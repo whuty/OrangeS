@@ -5,6 +5,9 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
+#ifndef _GLOBAL_H_
+#define _GLOBAL_H_
+
 /* EXTERN is defined as extern except in global.c */
 #ifdef	GLOBAL_VARIABLES_HERE
 #undef	EXTERN
@@ -22,3 +25,5 @@ EXTERN	PROCESS*	p_proc_ready;
 
 extern	PROCESS		proc_table[];
 extern	char		task_stack[];
+
+#endif /*_GLOBAL_H_*/

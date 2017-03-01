@@ -5,6 +5,10 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
+#ifndef _PROTO_H_
+#define _PROTO_H_
+
+
 /* kliba.asm */
 PUBLIC void	out_byte(u16 port, u8 value);
 PUBLIC u8	in_byte(u16 port);
@@ -27,3 +31,5 @@ void restart();
 
 /* main.c */
 void TestA();
+
+#endif /*_PROTO_H_*/

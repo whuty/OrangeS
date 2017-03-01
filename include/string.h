@@ -5,5 +5,9 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
+#ifndef _STRING_H_
+#define _STRING_H_
+
 PUBLIC	void*	memcpy(void* p_dst, void* p_src, int size);
 
+#endif /*_STRING_H_*/
