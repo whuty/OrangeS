@@ -1,4 +1,0 @@
-#!/bin/sh
-OBJS=kernel/kernel.o kernel/start.o lib/kliba.o lib/string.o \
- lib/klib.o kernel/global.o kernel/i8259.o kernel/protect.o kernel/main.o
-gcc -M $(OBJS) -I include

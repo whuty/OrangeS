@@ -71,21 +71,32 @@ $(ORANGESKERNEL) : $(OBJS)
 kernel/kernel.o : kernel/kernel.asm include/sconst.inc
 	$(ASM) $(ASMKFLAGS) -o $@ $<
 
-kernel/start.o : kernel/start.c include/type.h include/const.h \
-  include/protect.h include/string.h include/proto.h
+kernel/start.o : kernel/start.c /usr/include/stdc-predef.h include/type.h \
+ include/const.h include/protect.h include/proto.h include/string.h \
+ include/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-kernel/i8259.o : kernel/i8259.c include/type.h include/const.h \
-  include/protect.h include/proto.h
+kernel/i8259.o : kernel/i8259.c /usr/include/stdc-predef.h include/type.h \
+ include/const.h include/protect.h include/proto.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-kernel/global.o : kernel/global.c
+kernel/global.o : kernel/global.c include/type.h \
+ include/const.h include/protect.h include/proto.h include/proc.h \
+ include/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-kernel/protect.o : kernel/protect.c
+kernel/protect.o : kernel/protect.c /usr/include/stdc-predef.h include/type.h \
+ include/const.h include/protect.h include/global.h include/proto.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-lib/klib.o : lib/klib.c
+kernel/main.o: kernel/main.c /usr/include/stdc-predef.h include/type.h \
+ include/const.h include/protect.h include/proto.h include/string.h \
+ include/proc.h include/global.h
+ 	$(CC) $(CFLAGS) -o $@ $<
+
+lib/klib.o : lib/klib.c /usr/include/stdc-predef.h include/type.h \
+ include/const.h include/protect.h include/proto.h include/string.h \
+ include/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/kliba.o : lib/kliba.asm
