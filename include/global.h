@@ -8,6 +8,7 @@
 #ifndef _GLOBAL_H_
 #define _GLOBAL_H_
 
+#include "proc.h"
 /* EXTERN is defined as extern except in global.c */
 #ifdef	GLOBAL_VARIABLES_HERE
 #undef	EXTERN

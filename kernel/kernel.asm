@@ -19,6 +19,8 @@ StackTop:
 
 global _start
 
+global restart
+
 global	divide_error
 global	single_step_exception
 global	nmi

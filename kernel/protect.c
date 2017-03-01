@@ -16,7 +16,7 @@
 PRIVATE void init_idt_desc(unsigned char vector, u8 desc_type,
 			   int_handler handler, unsigned char privilege);
 PRIVATE void init_descriptor(DESCRIPTOR * p_desc, u32 base, u32 limit, u16 attribute);
-
+PRIVATE void init_tss();
 /* 中断处理函数 */
 void	divide_error();
 void	single_step_exception();
