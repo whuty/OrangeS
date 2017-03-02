@@ -10,8 +10,10 @@
 magic_break:enabled=1
 
 # filename of ROM images
- romimage: file=/usr/local/share/bochs/BIOS-bochs-latest #/usr/share/bochs/BIOS-bochs-latest
- vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest #/usr/share/vgabios/vgabios.bin
+#romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
+ romimage: file=/usr/share/bochs/BIOS-bochs-latest
+#vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest
+ vgaromimage: file=/usr/share/vgabios/vgabios.bin
 
 #================================
 #the freedos.img is from the folder FreeDos-img
@@ -36,4 +38,5 @@ magic_break:enabled=1
 #to：
 #==================================================
 # enable key mapping, using US layout as default.
- keyboard: keymap=/usr/local/share/bochs/keymaps/x11-pc-us.map #/usr/share/bochs/keymaps/x11-pc-us.map
+#keyboard: keymap=/usr/local/share/bochs/keymaps/x11-pc-us.map
+ keyboard: keymap=/usr/share/bochs/keymaps/x11-pc-us.map

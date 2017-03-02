@@ -11,6 +11,7 @@
 #include "global.h"
 #include "proc.h"
 #include "proto.h"
+#include "string.h"
 
 /* 本文件内函数声明 */
 PRIVATE void init_idt_desc(unsigned char vector, u8 desc_type,
@@ -154,13 +155,23 @@ PUBLIC void init_prot()
 
         init_idt_desc(INT_VECTOR_IRQ8 + 7,      DA_386IGate,
                       hwint15,                  PRIVILEGE_KRNL);
-	
+
+				init_idt_desc(INT_VECTOR_SYS_CALL,			DA_386IGate,
+											sys_call,									PRIVILEGE_USER);
+
 	init_tss();
 	/* 填充 GDT 中进程的 LDT 的描述符 */
-	init_descriptor(&gdt[INDEX_LDT_FIRST],
-		vir2phys(seg2phys(SELECTOR_KERNEL_DS), proc_table[0].ldts),
-		LDT_SIZE * sizeof(DESCRIPTOR) - 1,
-		DA_LDT);
+
+	PROCESS* p_proc = proc_table;
+	u16 selector_ldt = INDEX_LDT_FIRST << 3;
+	for(int i=0;i<NR_TASKS+NR_PROCS;i++){
+		init_descriptor(&gdt[selector_ldt >> 3],
+			vir2phys(seg2phys(SELECTOR_KERNEL_DS), proc_table[i].ldts),
+			LDT_SIZE * sizeof(DESCRIPTOR) - 1,
+			DA_LDT);
+		p_proc++;
+		selector_ldt += 1 << 3;
+	}
 }
 
 PRIVATE void init_tss()
@@ -273,4 +284,3 @@ PUBLIC void exception_handler(int vec_no,int err_code,int eip,int cs,int eflags)
 		disp_int(err_code);
 	}
 }
-

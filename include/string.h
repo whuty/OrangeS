@@ -4,10 +4,8 @@
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-
-#ifndef _STRING_H_
-#define _STRING_H_
+#pragma once
 
 PUBLIC	void*	memcpy(void* p_dst, void* p_src, int size);
-
-#endif /*_STRING_H_*/
+PUBLIC	void	memset(void* p_dst, char ch, int size);
+PUBLIC  char* strcpy(char* p_dst, char* p_src);

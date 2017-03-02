@@ -160,7 +160,7 @@ LABEL_FILE_LOADED:
 
 	mov	dh, 1			; "Ready."
 	call	DispStrRealMode		; 显示字符串
-	
+
 ; 下面准备跳入保护模式 -------------------------------------------
 
 ; 加载 GDTR
@@ -360,8 +360,6 @@ LABEL_PM_START:
 	;mov	[gs:((80 * 0 + 39) * 2)], ax	; 屏幕第 0 行, 第 39 列。
 
 	call	InitKernel
-
-	xchg bx,bx
 
 	;jmp	$
 
@@ -737,14 +735,14 @@ InitKernel:
 [SECTION  .data1]
 ALIGN	32
 LABEL_DATA:
-;symbol in real mode 
+;symbol in real mode
 ;String
 _szPMMessage:		db "In protect Mode now .",0 	;display in protect mode
 _szMemChkTitle:		db "BaseAddrL BaseAddrH LengthLow LengthHigh  Type",0Ah,0 	;
-_szRAMSize 			db "RAM size:",0
-_szReturn 			db 0Ah,0
+_szRAMSize: 			db "RAM size:",0
+_szReturn: 			db 0Ah,0
 ;parameters
-_wSPValueInRealMode dw 0
+_wSPValueInRealMode: dw 0
 _dwMCRNumber: 		dd 0 	;Memory Check Result
 _dwDispPos:			dd (80*6 + 0)*2
 _dwMemSize:			dd 0
@@ -765,11 +763,11 @@ dwDispPos 		equ BaseOfLoaderPhyAddr + _dwDispPos
 dwMemSize 		equ BaseOfLoaderPhyAddr + _dwMemSize
 dwMCRNumber 		equ BaseOfLoaderPhyAddr + _dwMCRNumber
 ARDStruct 		equ BaseOfLoaderPhyAddr + _ARDStruct
-	dwBaseAddrLow: equ BaseOfLoaderPhyAddr + _dwBaseAddrLow
-	dwBaseAddrHigh: equ BaseOfLoaderPhyAddr + _dwBaseAddrHigh
-	dwLengthLow:	equ BaseOfLoaderPhyAddr + _dwLengthLow
-	dwLengthHigh:	equ BaseOfLoaderPhyAddr + _dwLengthHigh
-	dwType:		equ BaseOfLoaderPhyAddr + _dwType
+	dwBaseAddrLow equ BaseOfLoaderPhyAddr + _dwBaseAddrLow
+	dwBaseAddrHigh equ BaseOfLoaderPhyAddr + _dwBaseAddrHigh
+	dwLengthLow	equ BaseOfLoaderPhyAddr + _dwLengthLow
+	dwLengthHigh	equ BaseOfLoaderPhyAddr + _dwLengthHigh
+	dwType		equ BaseOfLoaderPhyAddr + _dwType
 MemChkBuf 		equ BaseOfLoaderPhyAddr + _MemChkBuf
 
 ;the stack is at the end of data section
