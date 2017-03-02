@@ -42,10 +42,13 @@ PUBLIC void init_8259A()
 
 	//open the keyboard_interrupt
 	/* Master 8259, OCW1.  */
-	out_byte(INT_M_CTLMASK,	0xFD);
+	//out_byte(INT_M_CTLMASK,	0xFD);
 
 	/* Slave  8259, OCW1.  */
-	out_byte(INT_S_CTLMASK,	0xFF);
+	//out_byte(INT_S_CTLMASK,	0xFF);
+
+	out_byte(INT_M_CTLMASK,	0xFE);	// Master 8259, OCW1.
+	out_byte(INT_S_CTLMASK,	0xFF);	// Slave  8259, OCW1.
 }
 
 PUBLIC void spurious_irq(int irq)

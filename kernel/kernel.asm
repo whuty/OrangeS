@@ -4,6 +4,7 @@ extern cstart
 extern	exception_handler
 extern	spurious_irq
 extern kernel_main
+extern disp_str
 
 extern gdt_ptr
 extern idt_ptr
@@ -14,6 +15,9 @@ extern tss
 [section .bss]
 StackSpace resb 2*1024
 StackTop:
+
+[section .data]
+clock_int_msg db "^",0
 
 [section .text]
 
@@ -137,7 +141,39 @@ csinit:
 
 ALIGN   16
 hwint00:                ; Interrupt routine for irq 0 (the clock).
-        iretd
+	sub esp,4
+	pushad
+	push ds
+	push es
+	push fs
+	push gs
+	mov dx,ss
+	mov ds,dx
+	mov es,dx
+	
+	mov esp,StackTop
+	
+	inc byte [gs:0]
+	mov al,EOI
+	out INT_M_CTL,al
+
+	push clock_int_msg
+	call disp_str
+	add esp,4
+
+	mov esp,[p_proc_ready]
+
+	lea eax,[esp+P_STACKTOP]
+	mov dword [tss+TSS3_S_SP0],eax
+
+	pop gs
+	pop fs
+	pop es
+	pop ds
+	popad
+	add esp,4
+
+	iretd
         ;hwint_master    0
 
 ALIGN   16
