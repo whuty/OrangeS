@@ -25,7 +25,9 @@ DASMFLAGS = -u -o $(ENTRYPOINT) -e $(ENTRYOFFSET)
 ORANGESBOOT = boot/boot.bin boot/loader.bin
 ORANGESKERNEL=kernel.bin
 OBJS		= kernel/kernel.o kernel/start.o lib/kliba.o lib/string.o \
-  lib/klib.o kernel/global.o kernel/i8259.o kernel/protect.o kernel/main.o
+  lib/klib.o kernel/global.o kernel/i8259.o kernel/protect.o kernel/main.o \
+	kernel/clock.o kernel/syscall.o kernel/proc.o kernel/keyboard.o kernel/tty.o \
+	kernel/console.o
 DASMOUTPUT	= kernel.bin.asm
 
 # All Phony Targets
@@ -68,6 +70,15 @@ boot/loader.bin : boot/loader.asm boot/include/load.inc \
 $(ORANGESKERNEL) : $(OBJS)
 	$(LD) $(LDFLAGS) -o $(ORANGESKERNEL) $(OBJS)
 
+lib/kliba.o : lib/kliba.asm include/sconst.inc
+	$(ASM) $(ASMKFLAGS) -o $@ $<
+
+lib/string.o : lib/string.asm
+	$(ASM) $(ASMKFLAGS) -o $@ $<
+
+kernel/syscall.o : kernel/syscall.asm include/sconst.inc
+	$(ASM) $(ASMKFLAGS) -o $@ $<
+
 kernel/kernel.o : kernel/kernel.asm include/sconst.inc
 	$(ASM) $(ASMKFLAGS) -o $@ $<
 
@@ -77,12 +88,12 @@ kernel/start.o : kernel/start.c include/proc.h include/type.h \
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/i8259.o : kernel/i8259.c include/proc.h include/type.h \
- include/const.h include/protect.h include/proto.h
+ include/const.h include/protect.h include/proto.h include/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/global.o : kernel/global.c include/proc.h include/type.h \
  include/const.h include/protect.h include/proto.h include/proc.h \
- include/global.h
+ include/global.h include/tty.h include/console.h
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/protect.o : kernel/protect.c include/proc.h include/type.h \
@@ -95,13 +106,23 @@ kernel/main.o: kernel/main.c include/proc.h include/type.h \
  include/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 
+kernel/clock.o : kernel/clock.c include/type.h include/const.h \
+ include/proto.h include/global.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/keyboard.o : kernel/keyboard.c include/keyboard.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/tty.o : kernel/tty.c include/keyboard.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/console.o : kernel/console.c include/console.h
+	$(CC) $(CFLAGS) -o $@ $<
+
 lib/klib.o : lib/klib.c include/proc.h include/type.h \
  include/const.h include/protect.h include/proto.h include/string.h \
  include/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-lib/kliba.o : lib/kliba.asm
-	$(ASM) $(ASMKFLAGS) -o $@ $<
-
-lib/string.o : lib/string.asm
-	$(ASM) $(ASMKFLAGS) -o $@ $<
+kernel/proc.o : kernel/proc.c
+	$(CC) $(CFLAGS) -o $@ $<

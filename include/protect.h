@@ -4,9 +4,7 @@
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-
-#ifndef	_ORANGES_PROTECT_H_
-#define	_ORANGES_PROTECT_H_
+#pragma once
 
 
 /* 存储段描述符/系统段描述符 */
@@ -144,9 +142,9 @@ typedef struct s_tss {
 #define	INT_VECTOR_IRQ0			0x20
 #define	INT_VECTOR_IRQ8			0x28
 
+/* 系统调用 */
+#define INT_VECTOR_SYS_CALL             0x90
+
 /* 宏 */
 /* 线性地址 → 物理地址 */
 #define vir2phys(seg_base, vir)	(u32)(((u32)seg_base) + (u32)(vir))
-
-
-#endif /* _ORANGES_PROTECT_H_ */

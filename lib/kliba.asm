@@ -4,7 +4,7 @@
 ; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ;                                                       Forrest Yu, 2005
 ; ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+%include "sconst.inc"
 
 ; 导入全局变量
 extern	disp_pos
@@ -16,6 +16,71 @@ global	disp_str
 global	disp_color_str
 global	out_byte
 global	in_byte
+
+global enable_int
+global disable_int
+global enable_irq
+global disable_irq
+
+disable_int:
+	cli
+	ret
+
+enable_int:
+	sti
+	ret
+
+disable_irq:
+	mov ecx,[esp + 4]
+	pushf
+	cli
+	mov ah,1
+	rol ah,cl
+	cmp cl,8
+	jae disable_8
+disable_0:
+	in al,INT_M_CTLMASK
+	test al,ah
+	jnz dis_already
+	or al,ah
+	out INT_M_CTLMASK,al
+	popf
+	mov eax,1
+	ret
+disable_8:
+	in al,INT_S_CTLMASK
+	test al,ah
+	jnz dis_already
+	or al,ah
+	out INT_S_CTLMASK,al
+	popf
+	mov eax,1
+	ret
+dis_already:
+	popf
+	xor eax,eax
+	ret
+
+enable_irq:
+	mov ecx,[esp + 4]
+	pushf
+	cli
+	mov ah,~1
+	rol ah,cl
+	cmp cl,8
+	jae enable_8
+enable_0:
+	in al,INT_M_CTLMASK
+	and al,ah
+	out INT_M_CTLMASK,al
+	popf
+	ret
+enable_8:
+	in al,INT_S_CTLMASK
+	and al,ah
+	out INT_S_CTLMASK,al
+	popf
+	ret
 
 ; ========================================================================
 ;                  void disp_str(char * pszInfo);
@@ -114,4 +179,3 @@ in_byte:
 	nop	; 一点延迟
 	nop
 	ret
-

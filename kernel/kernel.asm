@@ -4,13 +4,19 @@ extern cstart
 extern	exception_handler
 extern	spurious_irq
 extern kernel_main
+extern clock_handler
 extern disp_str
+extern delay
+extern irq_table
+extern sys_call_table
 
 extern gdt_ptr
 extern idt_ptr
 extern disp_pos
 extern p_proc_ready
 extern tss
+extern	disp_pos
+extern	k_reenter
 
 [section .bss]
 StackSpace resb 2*1024
@@ -57,6 +63,8 @@ global  hwint12
 global  hwint13
 global  hwint14
 global  hwint15
+
+global sys_call
 
 _start:
 ; 此时内存看上去是这样的（更详细的内存情况在 LOADER.ASM 中有说明）：
@@ -132,49 +140,28 @@ csinit:
 ; 中断和异常 -- 硬件中断
 ; ---------------------------------
 %macro  hwint_master    1
-        push    %1
-        call    spurious_irq
-        add     esp, 4
-        hlt
+	call save
+	in al,INT_M_CTLMASK
+	or al,(1<<%1)
+	out INT_M_CTLMASK,al
+	mov al,EOI
+	out INT_M_CTL,al
+	sti
+	push %1
+	call [irq_table + 4 * %1]
+	pop ecx
+	cli
+	in al,INT_M_CTLMASK
+	and al,~(1<<%1)
+	out INT_M_CTLMASK,al
+	ret
 %endmacro
 ; ---------------------------------
 
 ALIGN   16
 hwint00:                ; Interrupt routine for irq 0 (the clock).
-	sub esp,4
-	pushad
-	push ds
-	push es
-	push fs
-	push gs
-	mov dx,ss
-	mov ds,dx
-	mov es,dx
-	
-	mov esp,StackTop
-	
-	inc byte [gs:0]
-	mov al,EOI
-	out INT_M_CTL,al
-
-	push clock_int_msg
-	call disp_str
-	add esp,4
-
-	mov esp,[p_proc_ready]
-
-	lea eax,[esp+P_STACKTOP]
-	mov dword [tss+TSS3_S_SP0],eax
-
-	pop gs
-	pop fs
-	pop es
-	pop ds
-	popad
-	add esp,4
-
-	iretd
-        ;hwint_master    0
+;inc	byte [gs:0]		; 改变屏幕第 0 行, 第 0 列的字符
+	hwint_master 0
 
 ALIGN   16
 hwint01:                ; Interrupt routine for irq 1 (keyboard)
@@ -312,21 +299,52 @@ exception:
 	add	esp, 4*2	; 让栈顶指向 EIP，堆栈中从顶向下依次是：EIP、CS、EFLAGS
 	hlt
 
-; ====================================================================================
-;                                   restart
-; ====================================================================================
+	save:
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		mov dx,ss
+		mov ds,dx
+		mov es,dx
+
+		mov esi,esp
+
+		inc dword [k_reenter]
+		cmp dword [k_reenter],0
+		jne .1
+
+		mov esp,StackTop
+
+		push restart
+		jmp [esi + RETADR - P_STACKBASE]
+	.1:
+		push restart_reenter
+		jmp [esi + RETADR - P_STACKBASE]
+
 restart:
 	mov	esp, [p_proc_ready]
-	lldt	[esp + P_LDT_SEL] 
+	lldt	[esp + P_LDT_SEL]
 	lea	eax, [esp + P_STACKTOP]
 	mov	dword [tss + TSS3_S_SP0], eax
-
+restart_reenter:
+	dec	dword [k_reenter]
 	pop	gs
 	pop	fs
 	pop	es
 	pop	ds
 	popad
-
 	add	esp, 4
-
 	iretd
+
+sys_call:
+	call save
+	sti
+
+	call [sys_call_table + eax * 4]
+	mov [esi + EAXREG - P_STACKBASE],eax
+
+	cli
+
+	ret
