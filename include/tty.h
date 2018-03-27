@@ -6,6 +6,10 @@ struct s_console;
 
 #define TTY_IN_BYTES 256 //tty input queue size
 
+/* magic chars used by `printx' */
+#define MAG_CH_PANIC	'\002'
+#define MAG_CH_ASSERT	'\003'
+
 //tty
 typedef struct s_tty
 {

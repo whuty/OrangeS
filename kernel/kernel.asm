@@ -19,7 +19,7 @@ extern	disp_pos
 extern	k_reenter
 
 [section .bss]
-StackSpace resb 2*1024
+StackSpace resb 4*1024
 StackTop:
 
 [section .data]
@@ -305,9 +305,15 @@ exception:
 		push es
 		push fs
 		push gs
+
+		mov esi,edx
+
 		mov dx,ss
 		mov ds,dx
 		mov es,dx
+		mov fs,dx
+
+		mov edx,esi
 
 		mov esi,esp
 
@@ -336,15 +342,25 @@ restart_reenter:
 	pop	ds
 	popad
 	add	esp, 4
+
 	iretd
 
 sys_call:
 	call save
+
 	sti
+	push esi
+
+	push dword [p_proc_ready]
+
+	push edx
+	push ecx
+	push ebx
 
 	call [sys_call_table + eax * 4]
+	add esp,4*4
+
+	pop esi
 	mov [esi + EAXREG - P_STACKBASE],eax
-
 	cli
-
 	ret

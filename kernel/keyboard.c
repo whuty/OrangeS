@@ -1,11 +1,11 @@
 #include "type.h"
 #include "const.h"
 #include "protect.h"
-#include "proto.h"
 #include "string.h"
 #include "proc.h"
 #include "global.h"
 #include "keyboard.h"
+#include "proto.h"
 
 /* Keymap for US MF-2 keyboard. */
 
@@ -170,7 +170,7 @@ PRIVATE void kb_ack()
 	u8 kb_read;
 	do{
 		kb_read = in_byte(KB_DATA);
-	} while (kb_read = !KB_ACK);
+	} while (kb_read == !KB_ACK);
 }
 PRIVATE void  set_leds() {
 	u8 leds = (caps_lock << 2 | num_lock << 1 | scroll_lock);

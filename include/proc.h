@@ -41,6 +41,19 @@ typedef struct s_proc {
 
 	u32 pid;                   /* process id passed in from MM */
 	char p_name[16];           /* name of the process */
+
+	int p_flags;
+
+	MESSAGE* p_msg;
+	int p_recvfrom;
+	int p_sendto;
+
+	int has_int_msg;
+
+	struct s_proc* q_sending;    //queue of procs sending msg
+	struct s_proc* next_sending; //next proc int the sending queue
+
+	int nr_tty;
 }PROCESS;
 
 typedef struct s_task{
@@ -50,17 +63,22 @@ typedef struct s_task{
 	char name[32];
 }TASK;
 
+#define proc2pid(x) (x - proc_table)
 
 /* Number of tasks */
-#define NR_TASKS	1
+#define NR_TASKS	2
 #define NR_PROCS  2
+#define FIRST_PROC	proc_table[0]
+#define LAST_PROC	proc_table[NR_TASKS + NR_PROCS - 1]
 
 /* stacks of tasks */
 #define STACK_SIZE_TESTA	0x8000
 #define STACK_SIZE_TESTB	0x8000
 
 #define STACK_SIZE_TTY 0x8000
+#define STACK_SIZE_SYS 0x8000
 
 #define STACK_SIZE_TOTAL	(STACK_SIZE_TESTA + \
 													STACK_SIZE_TESTB + \
-													STACK_SIZE_TTY)
+													STACK_SIZE_TTY + \
+												  STACK_SIZE_SYS)
